@@ -18,6 +18,13 @@
   font-size: medium;
 }
 
+.errorMeals{
+  text-align: center;
+  padding-top: 40px;
+  font-size: 2rem;
+  color: #c23f3f;
+}
+
 @keyframes meals-appear {
   from {
     opacity: 0;
