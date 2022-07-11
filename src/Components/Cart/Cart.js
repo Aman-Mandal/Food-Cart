@@ -7,6 +7,8 @@ import Checkout from './Checkout'
 
 const Cart = props => {
   const [isCheckout, setIsCheckout] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [didSubmit, setDidSubmit] = useState(false)
   const cartCtx = useContext(CartContext)
 
   const totalAmount = `$ ${cartCtx.totalAmount.toFixed(2)}`
@@ -24,10 +26,17 @@ const Cart = props => {
   }
 
   const submitOrderHandler = userData => {
+    setIsSubmitting(true)
     fetch('https://react-http-9dc01-default-rtdb.firebaseio.com/orders.json', {
       method: 'POST',
-      body: JSON.stringify({ user: userData, orderedItems: cartCtx.items }),
+      body: JSON.stringify({
+        user: userData,
+        orderedItems: cartCtx.items,
+      }),
     })
+    setIsSubmitting(false)
+    setDidSubmit(true)
+    cartCtx.clearCart()
   }
 
   const cartitems = (
@@ -58,8 +67,8 @@ const Cart = props => {
     </div>
   )
 
-  return (
-    <Modal onClose={props.onClose}>
+  const cartModalContent = (
+    <>
       {cartitems}
       <div className={styles.total}>
         <span>Total Amount</span>
@@ -70,6 +79,27 @@ const Cart = props => {
         <Checkout onConfirm={submitOrderHandler} onCancel={props.onClose} />
       )}
       {!isCheckout && modalActions}
+    </>
+  )
+
+  const isSubmittingModalContent = <p>Sending order data...</p>
+
+  const didSubmitModalContent = (
+    <>
+      <p>Successfully sent the order !!</p>
+      <div className={styles.actions}>
+        <button onClick={props.onClose} className={styles.button}>
+          Close
+        </button>
+      </div>
+    </>
+  )
+
+  return (
+    <Modal onClose={props.onClose}>
+      {!isSubmitting && !didSubmit && cartModalContent}
+      {isSubmitting && isSubmittingModalContent}
+      {!isSubmitting && didSubmit && didSubmitModalContent}
     </Modal>
   )
 }
