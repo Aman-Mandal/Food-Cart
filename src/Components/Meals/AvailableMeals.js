@@ -5,6 +5,9 @@ import { useEffect, useState } from 'react'
 
 const AvailableMeals = () => {
   const [meals, setMeals] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(false)
+
   useEffect(() => {
     const fetchMeals = async () => {
       const response = await fetch(
@@ -22,9 +25,18 @@ const AvailableMeals = () => {
         })
       }
       setMeals(loadedMeals)
+      setIsLoading(false)
     }
     fetchMeals()
   }, [])
+
+  if (isLoading) {
+    return (
+      <section>
+        <p className={styles.loadingMeals}>Loading Meals....</p>
+      </section>
+    )
+  }
 
   const mealsList = meals.map(meal => (
     <MealItem
